@@ -105,8 +105,13 @@ def main():
                 selected_object_address = handle.read_longlong(
                     handle.base_address + SELECTED_OBJECT_POINTER)
 
-                if selected_object_address > 2 ** 24:
+                if selected_object_address == 0:
+                    continue
+                else:
                     break
+
+            if selected_object_address == 0:
+                continue
 
             # If galaxy is E0 to E3 and galaxy is close enough to max size
             if int.from_bytes(handle.read_bytes(selected_object_address + 0x8, 1), 'little') in range(1, 4) and handle.read_float(selected_object_address + 0x20) >= 37500.0:
@@ -134,17 +139,26 @@ def main():
 
             time.sleep(0.1)
 
-            while not int.from_bytes(handle.read_bytes(handle.base_address + STAR_BROWSER_SEARCHING, 1), 'little'):
-                if handle.read_int(
-                        handle.base_address + STAR_BROWSER_SYSTEMS_FOUND) > 22:
+            for i in range(0, 180):
+                if not int.from_bytes(handle.read_bytes(handle.base_address + STAR_BROWSER_SEARCHING, 1), 'little'):
+                    if handle.read_int(
+                         handle.base_address + STAR_BROWSER_SYSTEMS_FOUND) > 22:
 
-                    pyautogui.click(handle.read_float(handle.base_address + CLEAR_BUTTON_COORDS[0]) + COORDS_OFFSET,
-                                    handle.read_float(handle.base_address + CLEAR_BUTTON_COORDS[1]) + COORDS_OFFSET + WINDOWED_OFFSET)
+                        pyautogui.click(handle.read_float(handle.base_address + CLEAR_BUTTON_COORDS[0]) + COORDS_OFFSET,
+                                handle.read_float(handle.base_address + CLEAR_BUTTON_COORDS[1]) + COORDS_OFFSET + WINDOWED_OFFSET)
 
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
-                    pyautogui.doubleClick(handle.read_float(handle.base_address + FILTER_BUTTON_COORDS[0]) + COORDS_OFFSET, handle.read_float(
-                        handle.base_address + FILTER_BUTTON_COORDS[1]) + COORDS_OFFSET + WINDOWED_OFFSET)
+                        pyautogui.doubleClick(handle.read_float(handle.base_address + FILTER_BUTTON_COORDS[0]) + COORDS_OFFSET, handle.read_float(
+                            handle.base_address + FILTER_BUTTON_COORDS[1]) + COORDS_OFFSET + WINDOWED_OFFSET)
+
+                        break
+
+                    time.sleep(1.0)
+
+                    continue
+                else:
+                    break
 
             time.sleep(0.1)
 
@@ -158,7 +172,11 @@ def main():
                 pyautogui.moveRel(0, SYSTEMS_OFFSET)
                 pyautogui.click()
 
-                time.sleep(0.1)
+                time.sleep(0.05)
+
+                pyautogui.click()
+
+                time.sleep(0.05)
 
                 for i in range(0, 60):
                     selected_object_address = handle.read_longlong(
@@ -166,9 +184,11 @@ def main():
 
                     if selected_object_address == 0:
                         continue
-                    else: break
+                    else:
+                        break
 
-                print(selected_object_address)
+                if selected_object_address == 0:
+                    continue
 
                 mass = handle.read_float(
                     selected_object_address + OBJECT_MASS) * EARTH_MASS
@@ -207,8 +227,11 @@ def main():
                     with pyautogui.hold("ctrl"):
                         pyautogui.press("f12")
 
-                pyautogui.press("h")
+                pyautogui.keyDown("h")
 
+                time.sleep(0.1)
+
+                pyautogui.keyUp("h")
 
 if __name__ == "__main__":
     main()
