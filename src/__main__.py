@@ -80,9 +80,11 @@ def main():
 
                 os.startfile("select_rg_397.se")
 
+                time.sleep(1.0)
+
                 select_milky_way = False
 
-            octree_level = random.randint(1, 4)
+            octree_level = random.randint(1, 7)
             octree_block = random.randint(0, 8 ** octree_level)
             number = random.randint(0, 2500)
 
@@ -113,16 +115,12 @@ def main():
             if selected_object_address == 0:
                 continue
 
-            # If galaxy is E0 to E3 and galaxy is close enough to max size
-            if int.from_bytes(handle.read_bytes(selected_object_address + 0x8, 1), 'little') in range(1, 4) and handle.read_float(selected_object_address + 0x20) >= 37500.0:
-                with open("goto_selected.se", 'w') as file:
-                    file.write("Goto { Time 0 Dist 10 }")
+            with open("goto_selected.se", 'w') as file:
+                file.write("Goto { Time 0 Dist 10 }")
 
-                time.sleep(0.1)
+            time.sleep(0.1)
 
-                os.startfile("goto_selected.se")
-            else:
-                continue
+            os.startfile("goto_selected.se")
 
             select_milky_way = True
 
