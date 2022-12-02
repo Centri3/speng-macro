@@ -26,12 +26,12 @@ EARTH_ESC_VEL = 11.1784
 EARTH_AVG_TEMP = 288.0
 
 # Addresses
-SELECTED_OBJECT_CODE = 0x19A8AB0
-STAR_BROWSER_SYSTEMS_FOUND = 0x1022DC8
-STAR_BROWSER_SEARCHING = 0x1048E31
+SELECTED_OBJECT_CODE = 0x19A9EA0
+STAR_BROWSER_SYSTEMS_FOUND = 0x1024178
+STAR_BROWSER_SEARCHING = 0x104A1E1
 
 # Pointers
-SELECTED_OBJECT_POINTER = 0x19A8B30
+SELECTED_OBJECT_POINTER = 0x19A9F20
 
 # Pointers offsets
 OBJECT_MASS = 0x11F8
@@ -40,15 +40,16 @@ OBJECT_AVG_TEMP = 0x1248
 OBJECT_OBLATENESS = 0x120C
 OBJECT_LIFE = 0x11BC
 OBJECT_CLASS = 0x34
+OBJECT_ATM_PRESSURE = 0x17D8
 GALAXY_TYPE = 0x8
 GALAXY_SIZE = 0x20
 
 # Coordinates
-STAR_BROWSER_COORDS = [0x1022D80, 0x1022D84]
-SEARCH_BUTTON_COORDS = [0x1024728, 0x102472C]
-CLEAR_BUTTON_COORDS = [0x1024A10, 0x1024A14]
-FILTER_BUTTON_COORDS = [0x1028A98, 0x1028A9C]
-FILTER_SORT_COORDS = [0x1026720, 0x1026724]
+STAR_BROWSER_COORDS = [0x1023D60, 0x1023D64]
+SEARCH_BUTTON_COORDS = [0x1025AD8, 0x1025ADC]
+CLEAR_BUTTON_COORDS = [0x1025DC0, 0x1025DC4]
+FILTER_BUTTON_COORDS = [0x1029E48, 0x1029E4C]
+FILTER_SORT_COORDS = [0x1027AD0, 0x1027AD4]
 
 # Coordinates offsets
 COORDS_OFFSET = 0xA
@@ -199,6 +200,7 @@ def main():
                 life = handle.read_int(
                     selected_object_address + OBJECT_LIFE)
                 object_class = handle.read_int(selected_object_address + OBJECT_CLASS)
+                atm_pressure = handle.read_float(selected_object_address + OBJECT_ATM_PRESSURE)
 
                 polar_radius = equat_radius * (1.0 - oblateness)
                 mean_radius = ((equat_radius ** 2.0)
@@ -218,6 +220,12 @@ def main():
                                                                                                                                                 1.07 * n) * math.pow(1.0 - math.fabs((esc_vel - EARTH_ESC_VEL) / (esc_vel + EARTH_ESC_VEL)), 0.70 * n) * math.pow(1.0 - math.fabs((avg_temp - EARTH_AVG_TEMP) / (avg_temp + EARTH_AVG_TEMP)), 5.58 * n)
 
                 if esi > 0.9975:
+                    with pyautogui.hold("ctrl"):
+                        pyautogui.press("f12")
+                elif esi > 0.9875 and atm_pressure > 1000.0:
+                    with pyautogui.hold("ctrl"):
+                        pyautogui.press("f12")
+                elif 0.999995 < mass and mass < 1.00005 and 6370.97 < equat_radius and equat_radius < 6371.31:
                     with pyautogui.hold("ctrl"):
                         pyautogui.press("f12")
                 # Magic numbers
